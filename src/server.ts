@@ -7,7 +7,6 @@ const router = new Router();
 router.get('/', ctx => {
     ctx.body = `Nodejs koa demo project`;
 }).get('/api/get_open_id', async (ctx) => {
-    console.log(ctx.request.header);
     const value = ctx.request.header['x-tt-openid'] as string;
     if (value) {
         ctx.body = {
@@ -21,9 +20,10 @@ router.get('/', ctx => {
         }
     }
 }).post('/api/text/antidirt', async (ctx) => {
-    console.log(`ctx`, ctx);
+    const res = await get_conn_id(ctx.request.header);
+    console.log(`ctx`, res);
     ctx.body = {
-        "result": ctx,
+        "result": res,
         "success": true,
     };
 
@@ -38,7 +38,7 @@ app.listen(PORT, () => {
 });
 
 async function get_conn_id(headers: any) {
-    
+    console.log("get_conn_id res1=", headers);
     const res = await axios.post('http://ws-push.dycloud-api.service/ws/get_conn_id', {
         "headers": {
             "Content-Type": "application/json",
