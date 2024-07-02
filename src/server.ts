@@ -16,7 +16,7 @@ router.get('/', ctx => {
     } else {
         ctx.body = {
             success: false,
-            message: `lu--dyc-open-id not exist`,
+            message: `lu11111--dyc-open-id not exist`,
         }
     }
 }).post('/api/text/antidirt', async (ctx) => {
