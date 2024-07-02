@@ -11,12 +11,12 @@ router.get('/', ctx => {
     if (value) {
         ctx.body = {
             success: true,
-            data: '12345'+value,
+            data: value,
         }
     } else {
         ctx.body = {
             success: false,
-            message: `dyc-open-id not exist`,
+            message: `lu--dyc-open-id not exist`,
         }
     }
 }).post('/api/text/antidirt', async (ctx) => {
@@ -24,11 +24,11 @@ router.get('/', ctx => {
     const content = body.content;
     const res = await axios.post('http://developer.toutiao.com/api/v2/tags/text/antidirt', {
         "tasks": [
-          {
-            "content": content
-          }
+            {
+                "content": content
+            }
         ]
-      });
+    });
     ctx.body = {
         "result": res.data,
         "success": true,
