@@ -11,7 +11,7 @@ router.get('/', ctx => {
     if (value) {
         ctx.body = {
             success: true,
-            data: value,
+            data: value + '11111',
         }
     } else {
         ctx.body = {
@@ -24,11 +24,11 @@ router.get('/', ctx => {
     const content = body.content;
     const res = await axios.post('http://developer.toutiao.com/api/v2/tags/text/antidirt', {
         "tasks": [
-          {
-            "content": content
-          }
+            {
+                "content": content
+            }
         ]
-      });
+    });
     ctx.body = {
         "result": res.data,
         "success": true,
