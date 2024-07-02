@@ -53,5 +53,12 @@ async function get_conn_id(headers: any) {
             }
         });
 
+    // const res = await axios.post('http://ws-push.dycloud-api.service/ws/get_conn_id', {
+    //     "service_id": headers['x-tt-serviceid'],
+    //     "env_id": headers['x-tt-envid'],
+    //     "token": headers['token']
+    // });    
+    // data: { data: '{"conn_id":"97382664194"}', err_msg: 'success', err_no: 0 } 
+    // console.log("get_conn_id res2=", res);
     return res.data;
 }
