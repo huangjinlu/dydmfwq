@@ -11,7 +11,7 @@ router.get('/', ctx => {
     if (value) {
         ctx.body = {
             success: true,
-            data: value,
+            data: value+'lulu',
         }
     } else {
         ctx.body = {
