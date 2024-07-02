@@ -20,11 +20,12 @@ router.get('/', ctx => {
         }
     }
 }).post('/api/text/antidirt', async (ctx) => {
-    const res = await get_conn_id(ctx.request.header);;
+    console.log(`ctx`, ctx);
     ctx.body = {
-        "result": res,
+        "result": ctx,
         "success": true,
-    }
+    };
+
 });
 
 app.use(bodyParser());
