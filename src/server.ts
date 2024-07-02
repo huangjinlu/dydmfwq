@@ -1,12 +1,7 @@
-import * as Koa from 'koa';
-import * as bodyParser from 'koa-bodyparser';
-import * as Router from '@koa/router'
-import * as axios from 'axios';
-
-//npm install - s axios
-//npm i --save-dev @types/koa__router
-//npm i --save-dev @types/koa-bodyparser
-//npm install--save - dev axios@1.4.0
+import Koa from 'koa';
+import bodyParser from 'koa-bodyparser';
+import Router from '@koa/router'
+import axios from 'axios';
 const app = new Koa();
 const router = new Router();
 router.get('/', ctx => {
@@ -16,7 +11,7 @@ router.get('/', ctx => {
     if (value) {
         ctx.body = {
             success: true,
-            data: value + '2222',
+            data: value,
         }
     } else {
         ctx.body = {
@@ -25,16 +20,15 @@ router.get('/', ctx => {
         }
     }
 }).post('/api/text/antidirt', async (ctx) => {
-    
     const body: any = ctx.request.body;
     const content = body.content;
     const res = await axios.post('http://developer.toutiao.com/api/v2/tags/text/antidirt', {
         "tasks": [
-            {
-                "content": content
-            }
+          {
+            "content": content
+          }
         ]
-    });
+      });
     ctx.body = {
         "result": res.data,
         "success": true,
