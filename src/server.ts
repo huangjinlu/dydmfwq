@@ -20,7 +20,7 @@ router.get('/', ctx => {
         }
     }
 }).post('/api/text/antidirt', async (ctx) => {
-    console.log("get_conn_id ctx=", ctx);
+    console.log("get_conn_id ctx=", "ctx");
     const res = await get_conn_id(ctx.request.header);
     console.log(`ctx`, res);
     ctx.body = {
@@ -39,12 +39,19 @@ app.listen(PORT, () => {
 });
 
 async function get_conn_id(headers: any) {
-    const res = await axios.post('http://ws-push.dycloud-api.service/ws/get_conn_id', {
-        "service_id": headers['x-tt-serviceid'],
-        "env_id": headers['x-tt-envid'],
-        "token": headers['token']
-    });
 
-    console.log("get_conn_id res2=", res);
-    return res;
+    const res = await axios.post('http://ws-push.dycloud-api.service/ws/get_conn_id',
+        {
+            "service_id": headers['x-tt-serviceid'],
+            "env_id": headers['x-tt-envid'],
+            "token": headers['token']
+        },
+        {
+            timeout: 1000,
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+    return res.data;
 }
