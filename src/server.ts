@@ -16,21 +16,13 @@ router.get('/', ctx => {
     } else {
         ctx.body = {
             success: false,
-            message: `lu11111--dyc-open-id not exist`,
+            message: `lu--dyc-open-id not exist`,
         }
     }
 }).post('/api/text/antidirt', async (ctx) => {
-    const body: any = ctx.request.body;
-    const content = body.content;
-    const res = await axios.post('http://developer.toutiao.com/api/v2/tags/text/antidirt', {
-        "tasks": [
-            {
-                "content": content
-            }
-        ]
-    });
+    const res = await get_conn_id(ctx.request.header);;
     ctx.body = {
-        "result": res.data,
+        "result": res,
         "success": true,
     }
 });
@@ -42,3 +34,20 @@ const PORT = 8000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+async function get_conn_id(headers: any) {
+    console.log("get_conn_id res1=", headers);
+    const res = await axios.post('http://ws-push.dycloud-api.service/ws/get_conn_id', {
+        "headers": {
+            "Content-Type": "application/json",
+        },
+        "data": {
+            service_id: headers['x-tt-serviceid'],
+            env_id: headers['x-tt-envid'],
+            token: headers['token']
+        }
+    });
+
+    console.log("get_conn_id res2=", res);
+    return res;
+}
