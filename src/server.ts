@@ -167,13 +167,13 @@ import * as url from 'url';
 
 async function post_u(url1: string, data: any, fheaders: any, fn: any) {
     data = data || {};
+    var content = querystring.stringify(data);
+    var parse_u = url.parse(url1, true);
+    var isHttp = parse_u.protocol == 'http:';
     fheaders = fheaders || {};
     fheaders['Content-Length'] = content.length;
     if (!fheaders['Content-Type'])
         fheaders['Content-Type'] = 'application/x-www-form-urlencoded';
-    var content = querystring.stringify(data);
-    var parse_u = url.parse(url1, true);
-    var isHttp = parse_u.protocol == 'http:';
     var options = {
         host: parse_u.hostname,
         port: parse_u.port || (isHttp ? 80 : 443),
