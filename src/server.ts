@@ -37,7 +37,7 @@ router.get('/', ctx => {
 
     const res1 = await post_u("https://webcast.bytedance.com/api/webcastmate/info",
         { "token": ctx.request.header['token'] },
-        { "Content-Type": "application/json" }, (data) => {
+        { "Content-Type": "application/json" }, (data: any) => {
             console.log('res:', data)
             // res = data;
             ctx.body = res;
