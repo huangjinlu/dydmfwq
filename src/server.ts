@@ -56,13 +56,15 @@ app.listen(PORT, () => {
 });
 
 async function get_conn_id(headers: any) {
+    const data =
+    {
+        "service_id": headers['x-tt-serviceid'],
+        "env_id": headers['x-tt-envid'],
+        "token": headers['token']
+    }
     try {
         const res = await axios.post('http://ws-push.dycloud-api.service/ws/get_conn_id',
-            {
-                "service_id": headers['x-tt-serviceid'],
-                "env_id": headers['x-tt-envid'],
-                "token": headers['token']
-            },
+            data,
             {
                 timeout: 1000,
                 headers: {
@@ -78,7 +80,7 @@ async function get_conn_id(headers: any) {
     } catch (err) {
         console.error('get_conn_id 异常 err:', err);
     }
-    console.error('get_conn_id 失败 headers:', headers);
+    console.error('get_conn_id 失败 data:', data);
 };
 
 async function getRoomInfo(headers: any) {
