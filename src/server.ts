@@ -3,6 +3,8 @@ import bodyParser from 'koa-bodyparser';
 import Router from '@koa/router'
 import axios from 'axios';
 
+// npm install json - bigint
+
 interface Data {
     err_no?: number;
     err_msg?: string;
@@ -11,6 +13,26 @@ interface Data {
 
 const app = new Koa();
 const router = new Router();
+
+// 解决大数字转换丢失问题  
+function jsonParse(text: any) {
+    text = text.replace(/([^"'\d])(\d{16,})/g, "$1\"$2\"")
+    // text = text.replace(/(-?\d+)/g, '"$1"')
+    ///(-?\d+)/g, '"$1"'
+    return JSON.parse(text);
+}
+// var str = "风雨雪送春归飞雪迎春到，飞雪连天向天横";
+// console.log(str.match(/春.*到/gi));
+// console.log(Getsubstr(str, '春', '雪'));
+function Getsubstr(str: string, f1: string, f2: string) {
+    var s1 = str.indexOf(f1);
+    if (s1 > -1) {
+        s1 += f1.length;
+        var s2 = str.indexOf(f2, s1);
+        if (s2 > s1)
+            return str.substring(s1, s2);
+    }
+}
 
 router.get('/', ctx => {
     const fheaders = ctx.request.header;
@@ -22,6 +44,8 @@ router.get('/', ctx => {
     const headers = {
         "Content-Type": "application/json",
     }
+
+    // formatResponseData
     // 发送一个 POST 请求
     const res = axios.request({
         method: 'post',
@@ -32,30 +56,25 @@ router.get('/', ctx => {
     // ctx.body = res
     ctx.body = `Nodejs koa demo project`;
 }).post('/api/get_open_id', async (ctx) => {
-    var res = 'res';
-    // const value = ctx.request.header['x-tt-openid'] as string;
 
-    await post_u("https://webcast.bytedance.com/api/webcastmate/info",
-        { "token": ctx.request.header['token'] },
-        { "Content-Type": "application/json" }, (data: any) => {
-            console.log('res:', data)
-            res = data;
-        });
-    console.log('res11:')
-    ctx.body = res;
+    ctx.body = getRoom_id(ctx.request.header);
+
+    // ctx.body = res;
 }).post('/api/start_game', async (ctx) => {
-    const conn_id = await get_conn_id(ctx.request.header);
+    var theaders = ctx.request.header;
+    const conn_id = await get_conn_id(theaders);
     if (!conn_id)
         return 'err conn_id';
+
     console.log('conn_id=', conn_id);
 
-    const roomId = await getRoomInfo(ctx.request.header);
-    if (!roomId)
-        return 'err roomId';
+    const room_Id = await getRoom_id(theaders);
+    if (!room_Id)
+        return 'err room_Id';
 
-    console.log('roomId=', roomId);
+    console.log('room_Id=', room_Id);
 
-    let startLive = await startLiveDataTaskAll(ctx.request.header);
+    let startLive = await startLiveDataTaskAll(theaders);
     if (startLive != 'ok') {
         return 'err ' + startLive;
     }
@@ -100,6 +119,20 @@ async function get_conn_id(fheaders: any) {
     }
     console.error('get_conn_id 失败 data:', data);
 };
+
+async function getRoom_id(fheaders: any) {
+    var room_id;
+    await post_u("https://webcast.bytedance.com/api/webcastmate/info",
+        { "token": fheaders['token'] },
+        { "Content-Type": "application/json" }, (data: any) => {
+            room_id = Getsubstr(data, '"room_id":', ',');
+            // console.error('data:', room_id);
+            if (!room_id)
+                console.error('data:', data);
+            // room_id = room_id ? room_id : data;
+        });
+    return room_id;
+}
 
 async function getRoomInfo(fheaders: any) {
     const data =
@@ -197,22 +230,28 @@ async function post_u(url1: string, data: any, fheaders: any, fn: any) {
 
     console.log('fheaders:', fheaders);
     console.log('data:', data);
-    const req = https.request(options, (res) => {
-        console.log('statusCode:', res.statusCode);
-        console.log('headers:', res.headers);
-        var _data = '';
-        res.on('data', (chunk) => {
-            _data += chunk;
-        });
-        res.on('end', () => {
-            console.error('end:', _data);
-            fn != undefined && fn(_data);
-        });
-        req.on('error', (e) => {
-            console.error(e);
-        });
-    });
-    req.write(content);
-    req.end();
 
+    await new Promise(async (resolve, reject) => {
+        const req = https.request(options, (res) => {
+            // console.log('statusCode:', res.statusCode);
+            // console.log('headers:', res.headers);
+            var _data = '';
+            res.on('data', (chunk) => {
+                _data += chunk;
+            });
+            res.on('end', () => {
+                console.error('end:', _data);
+                fn != undefined && fn(_data);
+                resolve('ok');
+            });
+            req.on('error', (e) => {
+                console.error(e);
+                reject('err');
+            });
+
+        });
+
+        req.write(content);
+        req.end();
+    });
 }
