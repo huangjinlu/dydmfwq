@@ -55,21 +55,22 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 
-async function get_conn_id(headers: any) {
+async function get_conn_id(fheaders: any) {
     const data =
     {
-        "service_id": headers['x-tt-serviceid'],
-        "env_id": headers['x-tt-envid'],
-        "token": headers['token']
+        "service_id": fheaders['x-tt-serviceid'],
+        "env_id": fheaders['x-tt-envid'],
+        "token": fheaders['token']
+    };
+    const headers = {
+        "Content-Type": "application/json",
     }
     try {
         const res = await axios.post('http://ws-push.dycloud-api.service/ws/get_conn_id',
             data,
             {
                 timeout: 1000,
-                headers: {
-                    "Content-Type": "application/json",
-                }
+                headers: headers
             });
         if (res.data.err_no == 0) {
             // data: { data: '{"conn_id":"97382664194"}', err_msg: 'success', err_no: 0 } 
@@ -83,29 +84,33 @@ async function get_conn_id(headers: any) {
     console.error('get_conn_id 失败 data:', data);
 };
 
-async function getRoomInfo(headers: any) {
+async function getRoomInfo(fheaders: any) {
+    const data =
+    {
+        "token": fheaders['token']
+    };
+    const headers = {
+        "Content-Type": "application/json",
+    }
     try {
         const res = await axios.post("https://webcast.bytedance.com/api/webcastmate/info",
-            {
-                "token": headers['token']
-            },
+            data,
             {
                 timeout: 1000,
-                headers: {
-                    "Content-Type": "application/json",
-                }
+                headers: headers
             });
+        //getRoomInfo 成功接收 res.data: { errcode: 50036, errmsg: 'token parse failed', error: 4, message: '' } 
         console.log("getRoomInfo 成功接收 res.data:", res.data);
-        if (res.data) {
-            return res.data['info']['room_id'];
+        if (res.data.data.info) {
+            return res.data.data.info.room_id;
         }
         else {
-            console.error("getRoomInfo res=", res);
+            console.log("getRoomInfo 成功接收 res.data:", res.data);
         }
     } catch (err) {
         console.error('getRoomInfo 异常 err:', err);
     }
-    console.error('getRoomInfo 失败 headers:', headers);
+    console.error('getRoomInfo 失败 data:', data);
 };
 
 async function startLiveDataTaskAll(headers: any) {
