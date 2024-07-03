@@ -17,7 +17,7 @@ router.get('/', ctx => {
     let res = 'res';
     // const value = ctx.request.header['x-tt-openid'] as string;
 
-    const res1 = await post_u("http://webcast.bytedance.com/api/webcastmate/info",
+    const res1 = await post_u("https://webcast.bytedance.com/api/webcastmate/info",
         { "token": ctx.request.header['token'] },
         { "Content-Type": "application/json" }, (data: any) => {
             console.log('res:', data)
