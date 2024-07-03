@@ -13,39 +13,36 @@ const app = new Koa();
 const router = new Router();
 
 router.get('/', ctx => {
-    // const fheaders = ctx.request.header;
-    // const data =
-    // {
-    //     "service_id": 'aaaa',
-    //     "env_id": 'bbbbb',
-    // };
-    // const headers = {
-    //     "Content-Type": "application/json",
-    // }
-    // // 发送一个 POST 请求
-    // const res = axios.request({
-    //     method: 'post',
-    //     url: 'https://www.huangjinlu.cn',
-    //     data: data
-    // });
+    const fheaders = ctx.request.header;
+    const data =
+    {
+        "service_id": 'aaaa',
+        "env_id": 'bbbbb',
+    };
+    const headers = {
+        "Content-Type": "application/json",
+    }
+    // 发送一个 POST 请求
+    const res = axios.request({
+        method: 'post',
+        url: 'https://www.huangjinlu.cn',
+        data: data
+    });
 
     // ctx.body = res
     ctx.body = `Nodejs koa demo project`;
 }).post('/api/get_open_id', async (ctx) => {
-    let res = 'res';
+    var res = 'res';
     // const value = ctx.request.header['x-tt-openid'] as string;
 
-    const res1 = await post_u("https://webcast.bytedance.com/api/webcastmate/info",
+    await post_u("https://webcast.bytedance.com/api/webcastmate/info",
         { "token": ctx.request.header['token'] },
         { "Content-Type": "application/json" }, (data: any) => {
             console.log('res:', data)
-            // res = data;
-            ctx.body = res;
-            return data;
+            res = data;
         });
-
-    console.log('res1:', res1)
-    // ctx.body = res;
+    console.log('res11:')
+    ctx.body = res;
 }).post('/api/start_game', async (ctx) => {
     const conn_id = await get_conn_id(ctx.request.header);
     if (!conn_id)
@@ -210,7 +207,6 @@ async function post_u(url1: string, data: any, fheaders: any, fn: any) {
         res.on('end', () => {
             console.error('end:', _data);
             fn != undefined && fn(_data);
-            return _data;
         });
         req.on('error', (e) => {
             console.error(e);
@@ -218,4 +214,5 @@ async function post_u(url1: string, data: any, fheaders: any, fn: any) {
     });
     req.write(content);
     req.end();
+
 }
