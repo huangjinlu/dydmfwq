@@ -62,8 +62,8 @@ async function get_conn_id(headers: any) {
                 }
             });
         // data: { data: '{"conn_id":"97382664194"}', err_msg: 'success', err_no: 0 } 
-        console.log("get_conn_id 核实timeout=", res);
-        return res.data['conn_id'];
+        console.log("get_conn_id 成功接收", res.data);
+        return res.data['data']['conn_id'];
     } catch (err) {
         console.error('get_conn_id 异常:', err);
     }
