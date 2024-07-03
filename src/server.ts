@@ -53,7 +53,7 @@ router.get('/', ctx => {
         url: 'https://www.huangjinlu.cn',
         data: data
     });
-
+    console.log('res=', res);
     // ctx.body = res
     ctx.body = `Nodejs koa demo project`;
 }).post('/api/get_open_id', async (ctx) => {
@@ -106,7 +106,7 @@ async function get_conn_id(fheaders: any) {
         const res = await axios.post('http://ws-push.dycloud-api.service/ws/get_conn_id',
             data,
             {
-                timeout: 1000,
+                timeout: 10000,
                 headers: headers
             });
         if (res.data.err_no == 0) {
@@ -147,7 +147,7 @@ async function getRoomInfo(fheaders: any) {
         const res = await axios.post("http://webcast.bytedance.com/api/webcastmate/info",
             data,
             {
-                timeout: 1000,
+                timeout: 10000,
                 headers: headers
             });
         //getRoomInfo 成功接收 res.data: { errcode: 50036, errmsg: 'token parse failed', error: 4, message: '' } 
@@ -191,7 +191,7 @@ async function startLiveDataTask(appId: string, roomId: string, msgType: string)
                 "msg_type": msgType
             },
             {
-                timeout: 1000,
+                timeout: 10000,
                 headers: {
                     "Content-Type": "application/json",
                 }
