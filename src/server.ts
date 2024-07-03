@@ -11,20 +11,41 @@ interface Data {
 
 const app = new Koa();
 const router = new Router();
+
 router.get('/', ctx => {
-    ctx.body = `Nodejs koa demo project`;
+    const fheaders = ctx.request.header;
+    const data =
+    {
+        "service_id": 'aaaa',
+        "env_id": 'bbbbb',
+    };
+    const headers = {
+        "Content-Type": "application/json",
+    }
+    // 发送一个 POST 请求
+    const res = axios.request({
+        method: 'post',
+        url: 'https://www.huangjinlu.cn',
+        data: data
+    });
+
+    ctx.body = res
+    // ctx.body = `Nodejs koa demo project`;
 }).post('/api/get_open_id', async (ctx) => {
     let res = 'res';
     // const value = ctx.request.header['x-tt-openid'] as string;
 
     const res1 = await post_u("https://webcast.bytedance.com/api/webcastmate/info",
         { "token": ctx.request.header['token'] },
-        { "Content-Type": "application/json" }, (data: any) => {
+        { "Content-Type": "application/json" }, (data) => {
             console.log('res:', data)
-            res = data;
+            // res = data;
+            ctx.body = res;
+            return data;
         });
+
     console.log('res1:', res1)
-    ctx.body = res;
+    // ctx.body = res;
 }).post('/api/start_game', async (ctx) => {
     const conn_id = await get_conn_id(ctx.request.header);
     if (!conn_id)
@@ -155,11 +176,6 @@ async function startLiveDataTask(appId: string, roomId: string, msgType: string)
     return msgType;
 };
 
-// post_u("https://www.huangjinlu.cn", { 'aaa': 'aaa1' }, (data) => {
-//   console.log(data)
-// });
-
-
 import * as http from 'http';
 import * as https from 'https';
 import * as querystring from 'querystring';
@@ -193,9 +209,8 @@ async function post_u(url1: string, data: any, fheaders: any, fn: any) {
         });
         res.on('end', () => {
             console.error('end:', _data);
-            if (fn)
-                console.log('fn:true');
             fn != undefined && fn(_data);
+            return _data;
         });
         req.on('error', (e) => {
             console.error(e);
