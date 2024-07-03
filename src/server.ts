@@ -14,6 +14,7 @@ interface Data {
 const app = new Koa();
 const router = new Router();
 
+var g_test = 0;
 // 解决大数字转换丢失问题  
 function jsonParse(text: any) {
     text = text.replace(/([^"'\d])(\d{16,})/g, "$1\"$2\"")
@@ -57,9 +58,9 @@ router.get('/', ctx => {
     ctx.body = `Nodejs koa demo project`;
 }).post('/api/get_open_id', async (ctx) => {
 
-    ctx.body = getRoom_id(ctx.request.header);
-
-    // ctx.body = res;
+    let room_id = await getRoom_id(ctx.request.header);
+    g_test++;
+    ctx.body = { 'g_test': g_test, 'data': room_id };
 }).post('/api/start_game', async (ctx) => {
     var theaders = ctx.request.header;
     const conn_id = await get_conn_id(theaders);
