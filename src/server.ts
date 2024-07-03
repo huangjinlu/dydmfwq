@@ -93,7 +93,7 @@ async function getRoomInfo(fheaders: any) {
         "Content-Type": "application/json",
     }
     try {
-        const res = await axios.post("https://webcast.bytedance.com/api/webcastmate/info",
+        const res = await axios.post("http://webcast.bytedance.com/api/webcastmate/info",
             data,
             {
                 timeout: 1000,
@@ -101,6 +101,7 @@ async function getRoomInfo(fheaders: any) {
             });
         //getRoomInfo 成功接收 res.data: { errcode: 50036, errmsg: 'token parse failed', error: 4, message: '' } 
         console.log("getRoomInfo 成功接收 res.data:", res.data);
+        console.log("getRoomInfo 成功接收 res:", res);
         if (res.data.data.info) {
             return res.data.data.info.room_id;
         }
