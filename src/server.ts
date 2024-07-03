@@ -23,7 +23,7 @@ router.get('/', ctx => {
     const conn_id = await get_conn_id(ctx.request.header);
     if (!conn_id)
         return 'err conn_id';
-
+    console.log('conn_id=', conn_id);
     const roomId = await getRoomInfo(ctx.request.header);
     if (!roomId)
         return 'err roomId';
@@ -48,21 +48,25 @@ app.listen(PORT, () => {
 });
 
 async function get_conn_id(headers: any) {
-    const res = await axios.post('http://ws-push.dycloud-api.service/ws/get_conn_id',
-        {
-            "service_id": headers['x-tt-serviceid'],
-            "env_id": headers['x-tt-envid'],
-            "token": headers['token']
-        },
-        {
-            // timeout: 1000,
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
-    // data: { data: '{"conn_id":"97382664194"}', err_msg: 'success', err_no: 0 } 
-    console.log("get_conn_id 核实timeout=", res);
-    return res.data['conn_id'];
+    try {
+        const res = await axios.post('http://ws-push.dycloud-api.service/ws/get_conn_id',
+            {
+                "service_id": headers['x-tt-serviceid'],
+                "env_id": headers['x-tt-envid'],
+                "token": headers['token']
+            },
+            {
+                timeout: 1000,
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+        // data: { data: '{"conn_id":"97382664194"}', err_msg: 'success', err_no: 0 } 
+        console.log("get_conn_id 核实timeout=", res);
+        return res.data['conn_id'];
+    } catch (err) {
+        console.error('get_conn_id 异常:', err);
+    }
 };
 
 async function getRoomInfo(headers: any) {
@@ -71,7 +75,7 @@ async function getRoomInfo(headers: any) {
             "token": headers['token']
         },
         {
-            // timeout: 1000,
+            timeout: 1000,
             headers: {
                 "Content-Type": "application/json",
             }
@@ -115,7 +119,7 @@ async function startLiveDataTask(appId: string, roomId: string, msgType: string)
                 "msg_type": msgType
             },
             {
-                // timeout: 1000,
+                timeout: 1000,
                 headers: {
                     "Content-Type": "application/json",
                 }
