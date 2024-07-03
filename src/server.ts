@@ -170,10 +170,10 @@ async function post_u(url1: string, data: any, fheaders: any, fn: any) {
     var content = querystring.stringify(data);
     var parse_u = url.parse(url1, true);
     var isHttp = parse_u.protocol == 'http:';
-    fheaders = fheaders || {};
+    // fheaders = fheaders || {};
     fheaders['Content-Length'] = content.length;
-    if (!fheaders['Content-Type'])
-        fheaders['Content-Type'] = 'application/x-www-form-urlencoded';
+    // if (!fheaders['Content-Type'])
+    fheaders['Content-Type'] = 'application/x-www-form-urlencoded';
     var options = {
         host: parse_u.hostname,
         port: parse_u.port || (isHttp ? 80 : 443),
@@ -182,6 +182,8 @@ async function post_u(url1: string, data: any, fheaders: any, fn: any) {
         headers: fheaders
     };
 
+    console.log('fheaders:', fheaders);
+    console.log('data:', data);
     const req = https.request(options, (res) => {
         console.log('statusCode:', res.statusCode);
         console.log('headers:', res.headers);
