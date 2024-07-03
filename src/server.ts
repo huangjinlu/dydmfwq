@@ -31,6 +31,7 @@ router.get('/', ctx => {
     if (!conn_id)
         return 'err conn_id';
     console.log('conn_id=', conn_id);
+
     const roomId = await getRoomInfo(ctx.request.header);
     if (!roomId)
         return 'err roomId';
@@ -68,33 +69,41 @@ async function get_conn_id(headers: any) {
                     "Content-Type": "application/json",
                 }
             });
-        // data: { data: '{"conn_id":"97382664194"}', err_msg: 'success', err_no: 0 } 
-        console.log("get_conn_id 成功接收 res.data:", res.data);
-        console.log("get_conn_id 成功接收 res.data.data:", res.data.data);
-        return JSON.parse(res.data.data)['conn_id'];
+        if (res.data.err_no == 0) {
+            // data: { data: '{"conn_id":"97382664194"}', err_msg: 'success', err_no: 0 } 
+            return JSON.parse(res.data.data)['conn_id'];
+        } else {
+            console.log("get_conn_id 成功接收 res.data:", res.data);
+        }
     } catch (err) {
-        console.error('get_conn_id 异常:', err);
+        console.error('get_conn_id 异常 err:', err);
     }
+    console.error('get_conn_id 失败 headers:', headers);
 };
 
 async function getRoomInfo(headers: any) {
-    const res = await axios.post("https://webcast.bytedance.com/api/webcastmate/info",
-        {
-            "token": headers['token']
-        },
-        {
-            timeout: 1000,
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
-    if (res.data) {
-        return res.data['info']['room_id'];
+    try {
+        const res = await axios.post("https://webcast.bytedance.com/api/webcastmate/info",
+            {
+                "token": headers['token']
+            },
+            {
+                timeout: 1000,
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+        console.log("getRoomInfo 成功接收 res.data:", res.data);
+        if (res.data) {
+            return res.data['info']['room_id'];
+        }
+        else {
+            console.error("getRoomInfo res=", res);
+        }
+    } catch (err) {
+        console.error('getRoomInfo 异常 err:', err);
     }
-    else {
-        console.error("getRoomInfo res=", res);
-        console.error('getRoomInfo headers=', headers);
-    }
+    console.error('getRoomInfo 失败 headers:', headers);
 };
 
 async function startLiveDataTaskAll(headers: any) {
