@@ -14,18 +14,11 @@ const router = new Router();
 router.get('/', ctx => {
     ctx.body = `Nodejs koa demo project`;
 }).get('/api/get_open_id', async (ctx) => {
-    const value = ctx.request.header['x-tt-openid'] as string;
-    if (value) {
-        ctx.body = {
-            success: true,
-            data: value,
-        }
-    } else {
-        ctx.body = {
-            success: false,
-            message: `lu--dyc-open-id not exist`,
-        }
-    }
+    // const value = ctx.request.header['x-tt-openid'] as string;
+    post_u("https://www.huangjinlu.cn", { 'aaa': 'aaa1' }, (data: any) => {
+        // console.log(data)
+        ctx.body = data;
+    });
 }).post('/api/start_game', async (ctx) => {
     const conn_id = await get_conn_id(ctx.request.header);
     if (!conn_id)
@@ -155,3 +148,47 @@ async function startLiveDataTask(appId: string, roomId: string, msgType: string)
     }
     return msgType;
 };
+
+// post_u("https://www.huangjinlu.cn", { 'aaa': 'aaa1' }, (data) => {
+//   console.log(data)
+// });
+
+
+import * as http from 'http';
+import * as https from 'https';
+import * as querystring from 'querystring';
+import * as url from 'url';
+
+async function post_u(url1: string, data: any, fn: any) {
+    data = data || {};
+    var content = querystring.stringify(data);
+    var parse_u = url.parse(url1, true);
+    var isHttp = parse_u.protocol == 'http:';
+    var options = {
+        host: parse_u.hostname,
+        port: parse_u.port || (isHttp ? 80 : 443),
+        path: parse_u.path,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': content.length
+        }
+    };
+
+    const req = https.request(options, (res) => {
+        console.log('statusCode:', res.statusCode);
+        console.log('headers:', res.headers);
+        var _data = '';
+        res.on('data', (chunk) => {
+            _data += chunk;
+        });
+        res.on('end', () => {
+            fn != undefined && fn(_data);
+        });
+        req.on('error', (e) => {
+            console.error(e);
+        });
+    });
+    req.write(content);
+    req.end();
+}
