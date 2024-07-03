@@ -2,6 +2,13 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from '@koa/router'
 import axios from 'axios';
+
+interface Data {
+    err_no?: number;
+    err_msg?: string;
+    data?: any;
+}
+
 const app = new Koa();
 const router = new Router();
 router.get('/', ctx => {
@@ -63,7 +70,7 @@ async function get_conn_id(headers: any) {
             });
         // data: { data: '{"conn_id":"97382664194"}', err_msg: 'success', err_no: 0 } 
         console.log("get_conn_id 成功接收", res.data);
-        return res.data['data']['conn_id'];
+        return res.data.data['conn_id'];
     } catch (err) {
         console.error('get_conn_id 异常:', err);
     }
@@ -105,11 +112,7 @@ async function startLiveDataTaskAll(headers: any) {
     return 'err';
 };
 
-interface Data {
-    err_no?: number;
-    err_msg?: string;
-    data?: any;
-}
+
 async function startLiveDataTask(appId: string, roomId: string, msgType: string) {
     try {
         const res = await axios.post("http://webcast.bytedance.com/api/live_data/task/start",
