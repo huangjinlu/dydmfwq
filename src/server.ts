@@ -69,8 +69,9 @@ async function get_conn_id(headers: any) {
                 }
             });
         // data: { data: '{"conn_id":"97382664194"}', err_msg: 'success', err_no: 0 } 
-        console.log("get_conn_id 成功接收", res.data);
-        return res.data.data['conn_id'];
+        console.log("get_conn_id 成功接收 res.data:", res.data);
+        console.log("get_conn_id 成功接收 res.data.data:", res.data.data);
+        return JSON.parse(res.data.data)['conn_id'];
     } catch (err) {
         console.error('get_conn_id 异常:', err);
     }
