@@ -53,6 +53,17 @@ router.get('/', ctx => {
         url: 'https://www.huangjinlu.cn',
         data: data
     });
+    res.then(
+        // 成功时执行的回调
+        (value) => {
+            console.log(value); // 成功返回值
+        },
+        // 失败时执行的回调
+        (reason) => {
+            console.error(reason); // 出错了！
+        }
+    );
+
     console.log('res=', res);
     // ctx.body = res
     ctx.body = `Nodejs koa demo project`;
@@ -75,7 +86,7 @@ router.get('/', ctx => {
 
     console.log('room_Id=', room_Id);
 
-    let startLive = await startLiveDataTaskAll(theaders);
+    let startLive = await startLiveDataTaskAll(room_Id, theaders);
     if (startLive != 'ok') {
         return 'err ' + startLive;
     }
@@ -165,12 +176,12 @@ async function getRoomInfo(fheaders: any) {
     console.error('getRoomInfo 失败 data:', data);
 };
 
-async function startLiveDataTaskAll(headers: any) {
+async function startLiveDataTaskAll(room_Id: string, headers: any) {
     let appId = headers['x-tt-appid'];
     try {
         let msgTypes = ['live_comment', 'live_like', 'live_gift'];
         for (const msgType of msgTypes) {
-            let res = await startLiveDataTask(appId, headers, msgType);
+            let res = await startLiveDataTask(appId, room_Id, msgType);
             if (res != 'ok')
                 return res;
         }
