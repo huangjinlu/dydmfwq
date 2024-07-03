@@ -14,11 +14,13 @@ const router = new Router();
 router.get('/', ctx => {
     ctx.body = `Nodejs koa demo project`;
 }).get('/api/get_open_id', async (ctx) => {
+    let res = 'res';
     // const value = ctx.request.header['x-tt-openid'] as string;
     post_u("https://www.huangjinlu.cn", { 'aaa': 'aaa1' }, (data: any) => {
-        // console.log(data)
-        ctx.body = data;
+        console.log(data)
+        res = data;
     });
+    ctx.body = res;
 }).post('/api/start_game', async (ctx) => {
     const conn_id = await get_conn_id(ctx.request.header);
     if (!conn_id)
@@ -183,6 +185,7 @@ async function post_u(url1: string, data: any, fn: any) {
             _data += chunk;
         });
         res.on('end', () => {
+            console.error('end:', _data);
             fn != undefined && fn(_data);
         });
         req.on('error', (e) => {
