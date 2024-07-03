@@ -13,24 +13,24 @@ const app = new Koa();
 const router = new Router();
 
 router.get('/', ctx => {
-    const fheaders = ctx.request.header;
-    const data =
-    {
-        "service_id": 'aaaa',
-        "env_id": 'bbbbb',
-    };
-    const headers = {
-        "Content-Type": "application/json",
-    }
-    // 发送一个 POST 请求
-    const res = axios.request({
-        method: 'post',
-        url: 'https://www.huangjinlu.cn',
-        data: data
-    });
+    // const fheaders = ctx.request.header;
+    // const data =
+    // {
+    //     "service_id": 'aaaa',
+    //     "env_id": 'bbbbb',
+    // };
+    // const headers = {
+    //     "Content-Type": "application/json",
+    // }
+    // // 发送一个 POST 请求
+    // const res = axios.request({
+    //     method: 'post',
+    //     url: 'https://www.huangjinlu.cn',
+    //     data: data
+    // });
 
-    ctx.body = res
-    // ctx.body = `Nodejs koa demo project`;
+    // ctx.body = res
+    ctx.body = `Nodejs koa demo project`;
 }).post('/api/get_open_id', async (ctx) => {
     let res = 'res';
     // const value = ctx.request.header['x-tt-openid'] as string;
@@ -197,6 +197,7 @@ async function post_u(url1: string, data: any, fheaders: any, fn: any) {
         method: 'POST',
         headers: fheaders
     };
+
     console.log('fheaders:', fheaders);
     console.log('data:', data);
     const req = https.request(options, (res) => {
