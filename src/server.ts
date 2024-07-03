@@ -13,13 +13,17 @@ const app = new Koa();
 const router = new Router();
 router.get('/', ctx => {
     ctx.body = `Nodejs koa demo project`;
-}).get('/api/get_open_id', async (ctx) => {
+}).post('/api/get_open_id', async (ctx) => {
     let res = 'res';
     // const value = ctx.request.header['x-tt-openid'] as string;
-    post_u("https://www.huangjinlu.cn", { 'aaa': 'aaa1' }, (data: any) => {
-        console.log(data)
-        res = data;
-    });
+
+    const res1 = await post_u("http://webcast.bytedance.com/api/webcastmate/info",
+        { "token": ctx.request.header['token'] },
+        { "Content-Type": "application/json" }, (data: any) => {
+            console.log('res:', data)
+            res = data;
+        });
+    console.log('res1:', res1)
     ctx.body = res;
 }).post('/api/start_game', async (ctx) => {
     const conn_id = await get_conn_id(ctx.request.header);
@@ -161,8 +165,12 @@ import * as https from 'https';
 import * as querystring from 'querystring';
 import * as url from 'url';
 
-async function post_u(url1: string, data: any, fn: any) {
+async function post_u(url1: string, data: any, fheaders: any, fn: any) {
     data = data || {};
+    fheaders = fheaders || {};
+    fheaders['Content-Length'] = content.length;
+    if (!fheaders['Content-Type'])
+        fheaders['Content-Type'] = 'application/x-www-form-urlencoded';
     var content = querystring.stringify(data);
     var parse_u = url.parse(url1, true);
     var isHttp = parse_u.protocol == 'http:';
@@ -171,10 +179,7 @@ async function post_u(url1: string, data: any, fn: any) {
         port: parse_u.port || (isHttp ? 80 : 443),
         path: parse_u.path,
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': content.length
-        }
+        headers: fheaders
     };
 
     const req = https.request(options, (res) => {
@@ -186,6 +191,8 @@ async function post_u(url1: string, data: any, fn: any) {
         });
         res.on('end', () => {
             console.error('end:', _data);
+            if (fn)
+                console.log('fn:true');
             fn != undefined && fn(_data);
         });
         req.on('error', (e) => {
